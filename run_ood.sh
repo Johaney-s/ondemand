@@ -53,6 +53,15 @@ OIDCRedirectURI: 'http://${SERVERNAME}/oidc/redirect_uri'
 user_map_match: '^([^@]+)@'
 EOF
 
+cat > ./config/ood_conf.yml << EOF
+---
+custom_javascript_files:
+  - "/metacentrum/shepherd.min.js"
+  - "/metacentrum/shepherd.js"
+custom_css_files:
+  - "/metacentrum/shepherd.css"
+EOF
+
 echo "Configuration file generated at ./config/ood_portal.yml"
 
 # Build the Docker image (if not already built)
@@ -73,6 +82,10 @@ docker run -d \
   -p 80:80 \
   -p 443:443 \
   -v "$(pwd)/config/ood_portal.yml:/etc/ood/config/ood_portal.yml:ro" \
+  -v "$(pwd)/config/ood_conf.yml:/etc/ood/config/ondemand.d/ood_conf.yml:ro" \
+  -v "$(pwd)/shepherd.js:/var/www/ood/public/metacentrum/shepherd.js:ro" \
+  -v "$(pwd)/shepherd.min.js:/var/www/ood/public/metacentrum/shepherd.min.js:ro" \
+  -v "$(pwd)/shepherd.css:/var/www/ood/public/metacentrum/shepherd.css:ro" \
   ondemand-oidc
 
 echo "Container started! Check status with: docker ps"
